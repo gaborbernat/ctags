@@ -115,6 +115,10 @@ HTML:
 
     * Extract ``h4``, ``h5``, and ``h6`` contents.
 
+Fortran:
+
+    * Fill ``end`` field.
+
 New parsers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The following parsers have been added:
