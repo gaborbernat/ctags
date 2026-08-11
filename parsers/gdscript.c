@@ -1223,7 +1223,7 @@ static int prepareUnnamedClass (struct NestingLevels *nls)
 {
 	{
 		/* Ugly: we need a "position" on the input stream for making a tag.
-		 * At the begining of parsing, the position is undefined.
+		 * At the beginning of parsing, the position is undefined.
 		 * By reading a byte, the position is defined.
 		 */
 		int c = getcFromInputFile ();
