@@ -646,8 +646,8 @@ static void makeFortranTag (tokenInfo *const token, tagType tag)
 			}
 		}
 		if (token->parentType != NULL &&
-		    vStringLength (token->parentType) > 0 &&
-		    (token->tag == TAG_DERIVED_TYPE || (token->tag == TAG_SUBMODULE)))
+			vStringLength (token->parentType) > 0 &&
+			(token->tag == TAG_DERIVED_TYPE || (token->tag == TAG_SUBMODULE)))
 			e.extensionFields.inheritance = vStringValue (token->parentType);
 		if (token->implementation != IMP_DEFAULT)
 			e.extensionFields.implementation =
@@ -808,7 +808,7 @@ static int getFixedFormChar (bool parsingString, bool *freeSourceFormFound)
 			case LTYPE_INVALID:
 				*freeSourceFormFound = true;
 				if (inFixedSourceForm)
-				    return EOF;
+					return EOF;
 
 			case LTYPE_SHORT: break;
 			case LTYPE_COMMENT: skipLine (); break;
@@ -2787,7 +2787,7 @@ extern parserDefinition* FortranParser (void)
 		NULL
 	};
 	static selectLanguage selectors[] = { selectFortranOrForthByForthMarker,
-					      NULL };
+						  NULL };
 
 	parserDefinition* def = parserNew ("Fortran");
 	def->kindTable      = FortranKinds;
