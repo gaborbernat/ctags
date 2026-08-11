@@ -222,6 +222,7 @@ typedef struct sTokenInfo {
 	MIOPos filePosition;
 	bool anonymous;
 	int corkIndex;
+	int corkIndexForLinkName;
 } tokenInfo;
 
 /*
@@ -428,7 +429,10 @@ static void ancestorPop (unsigned long endLine)
 	Assert (Ancestors.count > 0);
 	--Ancestors.count;
 	if (endLine > 0)
+	{
 		setTagEndLineToCorkEntry (Ancestors.list [Ancestors.count].corkIndex, endLine);
+		setTagEndLineToCorkEntry (Ancestors.list [Ancestors.count].corkIndexForLinkName, endLine);
+	}
 	vStringDelete (Ancestors.list [Ancestors.count].string);
 	vStringDelete (Ancestors.list [Ancestors.count].signature);
 
@@ -441,6 +445,7 @@ static void ancestorPop (unsigned long endLine)
 	Ancestors.list [Ancestors.count].implementation = IMP_DEFAULT;
 	Ancestors.list [Ancestors.count].isMethod   = false;
 	Ancestors.list [Ancestors.count].corkIndex  = CORK_NIL;
+	Ancestors.list [Ancestors.count].corkIndexForLinkName = CORK_NIL;
 }
 
 static const tokenInfo* ancestorScope (void)
@@ -508,6 +513,7 @@ static tokenInfo *newToken (void)
 	token->filePosition = getInputFilePosition ();
 	token->anonymous    = false;
 	token->corkIndex    = CORK_NIL;
+	token->corkIndexForLinkName = CORK_NIL;
 
 	return token;
 }
@@ -595,7 +601,7 @@ static bool hasLinkName(tagEntryInfo *e)
  *   - -fsecond-underscore
  * * https://docs.oracle.com/cd/E19957-01/805-4940/z400091044a7/index.html
  */
-static void makeFortranLinkNameTag(tagEntryInfo *e)
+static int makeFortranLinkNameTag(tagEntryInfo *e)
 {
 	vString *ln = vStringNewInit (e->name);
 	vStringLower(ln);
@@ -610,8 +616,10 @@ static void makeFortranLinkNameTag(tagEntryInfo *e)
 	tagEntryInfo ln_e = *e;
 	ln_e.name = vStringValue (ln);
 	markTagExtraBit (&ln_e, FortranXtagTable[X_LINK_NAME].xtype);
-	makeTagEntry (&ln_e);
+	int r = makeTagEntry (&ln_e);
 	vStringDelete (ln);
+
+	return r;
 }
 
 static void makeFortranTag (tokenInfo *const token, tagType tag)
@@ -661,7 +669,7 @@ static void makeFortranTag (tokenInfo *const token, tagType tag)
 		token->corkIndex = makeTagEntry (&e);
 		if (isXtagEnabled (FortranXtagTable[X_LINK_NAME].xtype)
 			&& hasLinkName(&e))
-			makeFortranLinkNameTag(&e);
+			token->corkIndexForLinkName = makeFortranLinkNameTag(&e);
 	}
 }
 
@@ -1096,6 +1104,7 @@ static void readToken (tokenInfo *const token)
 	token->isMethod = false;
 	token->signature = NULL;
 	token->corkIndex = CORK_NIL;
+	token->corkIndexForLinkName = CORK_NIL;
 
 getNextChar:
 	c = getChar ();
